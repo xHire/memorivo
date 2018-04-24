@@ -1,0 +1,32 @@
+memorivo
+========
+
+About
+-----
+memorivo is a very simple replacement for a web service `memrise.com` or an
+application `anki`. You only need Ruby to run it.
+
+Vocabulary sheets
+-----------------
+Creating a vocabulary sheet is very easy. It is a plain-text file where each
+line is of the following format:
+
+    <word in the language you study>[TAB]<translation in your language>
+
+For instance:
+
+    koer	dog
+
+Installation and usage
+----------------------
+Open a terminal and navigate into a directory where you want to have memorivo
+installed. Then run:
+
+    $ git clone https://github.com/xHire/memorivo.git
+
+You can place your vocabulary sheets directly into the `memorivo/` directory.
+Then from that directory run:
+
+    $ ./memorivo estonian_01
+
+Here, `estonian_01` is a file name of a vocabulary sheet.

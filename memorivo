@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+require 'csv'
+
+if ARGV.size != 1
+  $stderr.puts "Usage: #{$0} vocabulary_sheet"
+  exit 1
+end
+
+unless File.exist?(ARGV[0])
+  $stderr.puts "Vocabulary sheet #{ARGV[0]} doesn’t exist"
+  exit 1
+end
+
+# load a vocabulary sheet
+vocabulary = []
+csv = CSV.parse(File.open(ARGV[0]), :col_sep => "\t")
+csv.each do |tuple|
+  vocabulary << {
+    :learning_lang => tuple[0],
+    :known_lang => tuple[1]
+  }
+end
+
+# compute exercise
+exercise = vocabulary.dup
+exercise = exercise.map {|v| [ v, false ] }.shuffle + exercise.map {|v| [ v, true ] }.shuffle
+
+# run the exercise
+def show_exercise(tuple, from_learning_lang = true)
+  # clear the screen first
+  print "\e[H\e[2J"
+
+  if from_learning_lang
+    from, to = tuple[:learning_lang], tuple[:known_lang]
+  else
+    from, to = tuple[:known_lang], tuple[:learning_lang]
+  end
+
+  puts "> #{from}"
+  input = $stdin.readline.chomp
+  if input == to
+    puts "\e[32;1mCORRECT!\e[0m"
+    r = true
+  else
+    puts "\e[31;1mERROR!\e[0m"
+    r = false
+    puts "Correct one is: #{to}"
+    print "Repeat it: "
+    until $stdin.readline.chomp == to
+      print "Repeat it correctly: "
+    end
+  end
+  puts "OK, press Enter to continue..."
+  $stdin.readline
+  r
+end
+
+until exercise.empty?
+  new_exercise = []
+  exercise.each do |v, i|
+    unless show_exercise(v, i)
+      new_exercise << [ v, i ]
+    end
+  end
+  exercise = new_exercise
+end
+
+puts "Cool, you learned it!"
